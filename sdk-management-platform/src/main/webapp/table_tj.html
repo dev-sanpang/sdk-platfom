@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>SKD数据统计</title>
+    <meta name="keywords" content="SKD数据统计">
+    <meta name="description" content="SKD数据统计">
+
+   
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico"> <link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+   <style type="text/css">
+   
+   .btn-xx{
+    background-image: none;
+    border-image-source: initial;
+    border-image-slice: initial;
+    border-image-width: initial;
+    border-image-outset: initial;
+    border-image-repeat: initial;
+    color: inherit;
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 1px;
+    padding: 6px 12px;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+   width: 140px;
+    }
+    .tex-center{
+    	text-align: center;
+    }
+   </style>
+
+</head>
+
+<body >
+<div class="ibox-content">
+<form class="form-horizontal m-t">
+   						<div class="form-group">
+                                        <label class="col-sm-2 control-label">查询日期：</label>
+                                        <div class="col-sm-10">
+                                            <!-- <input placeholder="开始日期" class="form-control layer-date" id="start" /> -->
+                                            	<select placeholder="开始日期" class="form-control layer-date" >
+                                            	 <option>starttime1</option>
+                                            	 <option>starttime2</option>
+                                            	</select>
+                                           <!--  <input placeholder="结束日期" class="form-control layer-date" id="end" /> -->
+                                            <select placeholder="结束日期" class="form-control layer-date" >
+                                            	 <option>endtime1</option>
+                                            	 <option>endtime2</option>
+                                            	</select>
+                                            <input placeholder="查询" class="btn-xx layer-date btn-primary tex-center"  readonly="readonly"  onclick="refreah()" />
+                                        </div>
+                                        
+             			 </div>
+        </form>
+        </div>
+        
+                <table id="example-aaa" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Extn.</th>
+                <th>Start date</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+    </table>
+ <input type="button" onclick="add()" value="CLERAR"/>
+ <input type="button" onclick="add()" value="CLERAR"/>
+ <input type="button" onclick="refreah()" value="Refrsh"/>
+    
+   <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+
+<script src="http://www.zhuhaihengxin.com/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="http://www.zhuhaihengxin.com/libs/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+    
+	<script type="text/javascript" charset="utf8" src="http://www.zhuhaihengxin.com/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+  
+    <script>
+			   $(document).ready(function() {
+					 $("#example-aaa").DataTable( {
+       				 /* "ajax": "data/objects2.json", */
+       				 "ajax": {
+		       			      "url": "/sdkManage/record/json",
+		       			      "type":"post", 
+		       			      "data":{"startTime":1},
+		       			      "dataSrc": "data"
+       			   			},
+        				"columns": [
+		          		  			{ "data": "name" },
+		           				    { "data": "position" },
+		         				    { "data": "office" },
+		           				    { "data": "extn" },
+		          				    { "data": "start_date" },
+		           				    { "data": "salary" }
+        						],
+      					 /*  "aLengthMenu" : [11, 21, 60], */
+		      			"bSort" : false,
+		      			"bFilter" : false,
+		      			"oLanguage": { //国际化配置  
+		                    "sProcessing" : "正在获取数据，请稍后...",    
+		                    "sLengthMenu" : "显示 _MENU_ 条",    
+		                    "sZeroRecords" : "没有您要搜索的内容",    
+		                    "sInfo" : "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",    
+		                    "sInfoEmpty" : "记录数为0",    
+		                    "sInfoFiltered" : "(全部记录数 _MAX_ 条)",    
+		                    "sInfoPostFix" : "",    
+		                    "sSearch" : "搜索",    
+		                    "sUrl" : "",    
+		                    "oPaginate": {    
+		                        "sFirst" : "第一页",    
+		                        "sPrevious" : "上一页",    
+		                        "sNext" : "下一页",    
+		                        "sLast" : "最后一页"    
+                    }  
+                }
+    } ); 
+} );
+			   function add(){
+				   $('#example-aaa').dataTable().fnClearTable();   //将数据清除  
+			   }
+			   function refreah(){
+				   $.ajax({  
+				                 　　type:'post',//可选get  
+				                 　　url:'/sdkManage/record/listjson',  
+				                 　　data:{"startTime":"2016-08-23"},  
+				                 　　dataType:'text',//服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+				                 　　success:function(msg){  
+                     		var msgObj=JSON.parse(msg);  
+                     		//重新构建table  
+                     		console.log(msgObj);
+                     		 $('#example-aaa').dataTable().fnClearTable();   //将数据清除  
+                 　					    $('#example-aaa').dataTable().fnAddData(msgObj,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+                 　  
+             　					　},  
+                 　　					error:function(){  
+                 　　							alert('error');  
+                 　							　}  
+         			})
+         		} 
+			   
+			   
+    </script>
+    
+
+</body>
+
+
+</html>

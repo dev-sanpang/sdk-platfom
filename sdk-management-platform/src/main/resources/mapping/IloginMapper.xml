@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aether.dao.IloginMapper">
+	<resultMap type="com.aether.pojo.sys.SecUser" id="SecUserResultMap">
+		<id property="userId" column="user_id" />
+		<result property="userName" column="user_name" />
+		<result property="createdTime" column="created_time" />
+		<result property="updateTime" column="update_time" />
+	</resultMap> 
+	
+	<resultMap type="com.aether.pojo.sys.SecRole" id="SecRoleResultMap">
+		<id property="roleId" column="role_id" />
+		<result property="roleName" column="role_name" />
+		<result property="createdTime" column="created_time" />
+		<result property="updateTime" column="update_time" />
+	</resultMap> 
+	<sql id="sql">
+		
+	</sql>
+	<!--   根据用户帐号 密码查询用户是否存在 -->
+	<select id="queryUserIsRight" parameterType="map" resultMap="SecUserResultMap">
+		
+		SELECT * FROM init_project.sec_user 
+		
+		where user_name =#{username} and password=#{password}
+
+	</select>
+	
+	<!--   根据用户id 查询对应用户角色 -->
+	<select id="queryRoleInfoByUserId" parameterType="map" resultMap="SecRoleResultMap">
+		
+		SELECT 
+   			 role.*
+		FROM
+    		init_project.sec_role AS role
+       		 LEFT JOIN
+   			 init_project.sec_user_role AS ur ON ur.role_id = role.role_id
+		WHERE
+   			 ur.user_id = #{userid}
+
+	</select>
+</mapper>

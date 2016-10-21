@@ -1,0 +1,69 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>易跋sdk统计系统</title>
+    <link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+	<link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+	<script src="js/echarts.min.js"></script>
+	<script src = "js/JsonUtil.js"></script>
+    <script>
+        window.addTab = function (title, url) {
+            //setTimeout(console.info(11),3000);
+            if ($("#tt").tabs("exists", title)) {
+                $("#tt").tabs("select", title);
+            } else {
+                $("#tt").tabs("add", {
+                    title: title,
+                    closable: true,
+                    href: url
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<!--<div style="margin:10px 0;"></div>-->
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'south',split:true" style="height:30px;">
+        <div align="center">By YiBa(易跋科技)</div>
+    </div>
+    <div data-options="region:'west',split:true" title="导航菜单" style="width:296px">
+        <div class="easyui-accordion">
+            <div title="APP统计" data-options="iconCls:'icon-more'">
+                <div class="easyui-accordion">
+					 <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('安装用户数','installUser.html')">安装用户数</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('事件及独立用户数','eventUserNum.html')">事件及独立用户数</a>
+<!-- 					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('某个版本事件数及用户数','eventUserOneVersion.html')">某个版本事件数及用户数</a> 
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('统计信息','overview.html')">概览(比较慢)</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('每日活跃度','activePercent.html')">每日活跃度</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('时间范围内活跃度','activePercentRange.html')">时间范围内活跃度</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('每日新用户占比','newUserPercent.html')">每日新用户占比</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('时间范围内新用户占比','newUserRangePercent.html')">时间范围内新用户占比</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('时间范围内品牌新增','addManUser.html')">时间范围内品牌新增</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('事件范围内机型新增','addDeviceNameUser.html')">事件范围内机型新增</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('事件范围内操作系统新增','addOsNameUser.html')">事件范围内操作系统新增</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('某个事件数及用户数','eventUserOneEvent.html')">某个事件数及用户数</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('国家某个事件数及用户数','eventUserOneEventCountry.html')">国家某个事件数及用户数</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('每个国家用户数','countryDeviceNum.html')">每个国家用户数</a> -->
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('事件详情','addExplain.html')">事件详情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div data-options="region:'east',split:true" title="East" style="width:100px;"></div>-->
+    <div data-options="region:'center',title:'SDK后台统计管理'">
+        <div id="tt" class="easyui-tabs" data-options="fit:true">
+            <div title="欢迎使用" style="padding:20px;overflow:hidden;" id="home">
+				<img src="image/mobileshow.png">
+                <!-- <img src="image/weshare.jpg"> -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

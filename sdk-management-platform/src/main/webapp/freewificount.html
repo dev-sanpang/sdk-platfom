@@ -1,0 +1,196 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>查询FreeWifi收集情况</title>  
+    <link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">    
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">  
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico"> 
+    <link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="css/loading.css" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <script src="http://www.zhuhaihengxin.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://www.zhuhaihengxin.com/libs/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="js/plugins/layer/laydate/laydate.js"></script>
+	<script type="text/javascript" charset="utf8" src="http://www.zhuhaihengxin.com/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script> 
+    <script type="text/javascript">  
+        $(window).on('load', function () {
+  			$.ajax({  //初始化日期列表
+				          type:'get',//可选get  
+				                 　　url:'/sdkManage/device/showDates',  
+				                 　　
+				                 　　dataType:'Json',//服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+				                 　　success:function(msg){  
+				              var selectedval = "";
+				             $("#startTime").append("<option value=''>"+"不区分日期"+"</option>");
+							 $.each(msg,function(n,value){
+								$("#startTime").append("<option value='"+value+"'>"+value+"</option>");
+								if(n==0){
+									selectedval = value;
+								}
+							 })
+							$('.selectpicker').selectpicker('val', selectedval);//单选
+							$(".selectpicker").selectpicker({noneSelectedText:'请选择'});
+							$('.selectpicker').selectpicker('refresh');
+             　					　},  
+                 　　				  error:function(){  
+                 　　							alert('error');  
+                 　							　}  
+         	})
+  			
+  			$.ajax({  //初始化包名列表
+				          type:'get',//可选get  
+				                 　　url:'/sdkManage/device/getAllPackages',  
+				                 　　dataType:'Json',//服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+				                 　　success:function(msg){  
+							 $.each(msg,function(n,value){
+								$("#packageName").append("<option value='"+value+"'>"+value+"</option>")
+							 })
+							 $(".selectpicker").selectpicker({noneSelectedText:'请选择'});
+							 $('.selectpicker').selectpicker('refresh');
+             　					　},  
+                 　　				  error:function(){  
+                 　　							alert('error');  
+                 　							　}  
+         	})
+         /*    
+            var sdate = $("#startTime").find("option:selected").text();
+			var packageName = $("#packageName").find("option:selected").text(); */
+	        
+	        
+	        $("#example-aaa").DataTable( {//初始化DataTable
+       				 //"ajax": "/sdkManage/device/installUsers",
+        			"columns": [
+		          		  			{ "data": "packageName" },
+		          		  			{ "data": "country" },
+		          		  			{ "data": "num" },
+		          		  			{ "data": "showDate" }
+		           				      
+        						],
+      			 /*  "aLengthMenu" : [11, 21, 60], */
+      				"bSort" : false,
+      				"bFilter" : false,
+      				"oLanguage": { //国际化配置  
+                    "sProcessing" : "正在获取数据，请稍后...",    
+                    "sLengthMenu" : "显示 _MENU_ 条",    
+                    "sZeroRecords" : "没有您要搜索的内容",    
+                    "sInfo" : "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",    
+                    "sInfoEmpty" : "记录数为0",    
+                    "sInfoFiltered" : "(全部记录数 _MAX_ 条)",    
+                    "sInfoPostFix" : "",    
+                    "sSearch" : "搜索",    
+                    "sUrl" : "",    
+                    "oPaginate": {    
+                        "sFirst" : "第一页",    
+                        "sPrevious" : "上一页",    
+                        "sNext" : "下一页",    
+                        "sLast" : "最后一页"    
+                    }  
+                }
+    } ); 
+    
+    
+        });  
+        
+        /*校验参数..然后调用后台查询数据*/
+        function search(){
+			var sdate = $("#startTime").find("option:selected").val();
+			//var packageName = $("#packageName").find("option:selected").text();
+			var packageName=$("#packageName").find("option:selected").text();
+			var groupType = $('input[type^=radio]:checked').val();
+			var showDate = sdate;
+			var country=$("#countryCode").val(); 
+			
+			var url="http://52.33.5.80:8080/sdk/admin/sys/checkNewWifi?packageName="+packageName+"&groupType="+groupType+"&showDate="+showDate+"&country="+country;
+			$.ajax({  //根据结果查询数据
+	                 　　 			  url:url,
+	    	              dataType:'jsonp',
+	    	              processData: false, 
+	    	              type:'get',
+				                 　　async: false, //同步请求，默认情况下是异步（true）
+		                  
+				          beforeSend: function(){
+		                	   $("#yangshi").removeAttr("hidden");
+		                   },
+		                  complete:function(){
+		                	   $("#yangshi").attr("hidden","true");
+		                   },   
+	    	              success:function(msg){  
+				            $('#example-aaa').dataTable().fnClearTable();   //将数据清除  
+              　					    $('#example-aaa').dataTable().fnAddData(msg,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}]  
+                 　  					//alert(msg)
+             　					　},  
+                 　　					error:function(){  
+                 　　							$("#yangshi").attr("hidden","true");
+                 　　		 	            	alert("后台异常,请求失败-------") 
+                 　							　}  
+         			})
+	            
+	}
+            function xianshen(id){
+            	if(id=="radioPackage"){//如果是包名的  就展示包名列表
+            		$("#hiddenCountry").attr("hidden","true");
+            		$("#hiddenPackage").removeAttr("hidden");
+            	}
+            	if(id=="radioCountry"){//如果选的是国家  就让他填
+            		$("#hiddenPackage").attr("hidden","true");
+            		
+            		$("#hiddenCountry").removeAttr("hidden");
+            	}
+            }
+        function test(){
+        	alert();
+        }
+    </script> 
+</head>  
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight"> 
+    <label class="radio-inline">
+  		<input type="radio" name="inlineRadioOptions" checked id="radioPackage" value="2" onclick="xianshen(id)"> 包名
+	</label>
+	<label class="radio-inline">
+  		<input type="radio" name="inlineRadioOptions"  id="radioCountry" value="1" onclick="xianshen(id)"> 国家
+	</label>
+    
+    <label for="id_select">开始时间</label>  
+    <select class="selectpicker bla bla bli" id="startTime"  data-live-search="true">  
+    </select>  
+    
+    <div id= "hiddenPackage">
+    <label for="id_select">包名</label>  
+    <select class="selectpicker bla bla bli" id="packageName"  data-live-search="true">
+    	<option value="" selected="true"></option>
+    </select>  
+    </div>
+    
+    <div id= "hiddenCountry" hidden="true">
+    <label for="id_select">国家代码</label>  
+    <input class="form-control" id="countryCode">
+    </input>  
+    </div>
+	<button class="btn btn-primary" type="submit" id="search" onclick="search()">查询</button>
+<div  class="ibox-content">
+	<table id="example-aaa" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>包名</th>
+                <th>国家</th>
+                <th>freewifi新增数量</th>
+                <th>时间</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+      <div class="spinner" hidden="true" id="yangshi" onclick="test()">
+		  <div class="dot1"></div>
+		  <div class="dot2"></div>
+	  </div>
+</div>
+</body>  
+
+</html>  

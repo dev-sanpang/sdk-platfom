@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<table data-options="fit:true" style="padding-left: 120px;">
+			<td data-options="fit:true" >开始日期：</td>
+			<td>
+				<div data-options="fit:true">
+				<input id="startDateN" name="startDate">
+				</div>
+			</td>
+
+			<td data-options="fit:true">结束日期：</td>
+			<td>
+				<div data-options="fit:true">
+				<input id="endDateN" name="startDate">
+				</div>
+			</td>
+			
+			<td data-options="fit:true">
+			版本号：
+			</td>
+			<td>
+				<div data-options="fit:true">
+					<input id="versionN" name="version" >
+				</div>
+			</td>
+
+			<td data-options="fit:true">
+			<td colspan="2">
+				<input type="button" id="searchN" value="查询"/>
+			</td>
+			<td data-options="fit:true">
+	</table>
+	
+
+<div style="padding-left: 120px;">
+	<table id="newUserPercent" ></table>
+</div>	
+
+
+<script type="text/javascript">
+	$(function(){
+		$('#versionN').combobox({    
+		    url:'/yiba_manage/version/getAll',    
+		    valueField:'appVersion',    
+		    textField:'appVersion'   
+		});  
+		$('#startDateN').combobox({    
+		    url:'/yiba_manage/device/showDates',    
+		    valueField:'date',    
+		    textField:'date'   
+		}); 
+		$('#endDateN').combobox({    
+		    url:'/yiba_manage/device/showDates',    
+		    valueField:'date',    
+		    textField:'date'   
+		}); 
+	})
+	
+	$("#searchN").click(function(){ 
+		var sdate = $('#startDateN').combobox('getValue');
+		var edate = $('#endDateN').combobox('getValue');
+		var version = $('#versionN').combobox('getValue');
+		
+		var Start_day = sdate.split("_");
+		var End_day = edate.split("_");
+		
+		if(sdate == ""){
+			alert("请选择开始时间");
+			return ;
+		}
+		
+		if(edate==""){
+			alert("请选择截止时间");
+			return ;
+		}
+		
+		if(version == ""){
+			alert("请选择版本号");
+			return ;
+		}
+		if(Start_day[0]>End_day[0]){
+			alert("开始时间大于截至时间,请重新选择");
+			return ;
+		}
+		if(Start_day[0]==End_day[0] && Start_day[1]>End_day[1]){
+			alert("开始时间大于截至时间,请重新选择");
+			return ;
+		}
+		if(Start_day[0]==End_day[0]&&Start_day[1]==End_day[1] && Start_day[2]>End_day[2]){
+			alert("开始时间大于截至时间,请重新选择");
+			return ;
+		}
+		
+		
+
+	
+	/**
+		 * 第一个表
+		 */
+		$('#newUserPercent').datagrid({
+    		url : "/yiba_manage/device/newUserPercent",
+    		width : 900,
+    		height : 670,
+    		method : 'POST',
+			title : "每日活跃度",
+			pagination : true,
+			fitColumns : true,
+			rownumbers : true,
+    		queryParams : {
+    			'startDate' : sdate,
+    			'endDate' : edate,
+    			'version' : version
+    		}, 
+    		pageNumber:1,
+    		pageSize: 10,
+    		 columns : [ [  {
+    			field : 'date',
+    			title : '日期',
+    			width : 100,
+    			align : 'center'
+    		}, {
+    			field : 'percent',
+    			title : '活跃度',
+    			width : 100,
+    			align : 'center'
+    		}] ], 
+    	});  
+		
+		
+	})
+</script>
+</body>
+</html>

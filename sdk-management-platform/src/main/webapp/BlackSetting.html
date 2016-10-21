@@ -1,0 +1,222 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>请求黑名单</title>  
+    <link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">    
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">  
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico"> 
+    <link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="css/loading.css" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <script src="http://www.zhuhaihengxin.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://www.zhuhaihengxin.com/libs/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="js/plugins/layer/laydate/laydate.js"></script>
+	<script type="text/javascript" charset="utf8" src="http://www.zhuhaihengxin.com/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script> 
+    <script type="text/javascript">  
+        $(window).on('load', function () {  
+        	//初始化DataTable
+	        $("#black").DataTable( {
+       				 //"ajax": "/sdkManage/device/installUsers",
+        			"columns": [
+		          		  			{ "data": "keyword" },
+		           				    { "data": "explain" },
+		           				    { "data": "createtime"}
+        						],
+      			"bSort" : false,
+      			"bFilter" : false,
+      			"oLanguage": { //国际化配置  
+                    "sProcessing" : "正在获取数据，请稍后...",    
+                     
+                    "sZeroRecords" : "没有您要搜索的内容",    
+                    "sInfo" : "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",    
+                    "sInfoEmpty" : "记录数为0",    
+                    "sInfoFiltered" : "(全部记录数 _MAX_ 条)",    
+                    "sInfoPostFix" : "",    
+                    "sSearch" : "搜索",    
+                    "sUrl" : "",    
+                    "oPaginate": {    
+                        "sFirst" : "第一页",    
+                        "sPrevious" : "上一页",    
+                        "sNext" : "下一页",    
+                        "sLast" : "最后一页"    
+                    }  
+                }
+    		} ); 
+        	
+        	
+	        var url="http://52.33.5.80:8080/sdk/admin/sys/getBlack";
+	        $.ajax({
+	            url:url,
+	            dataType:'jsonp',
+	            processData: false, 
+	            type:'get',
+	            beforeSend: function(){
+	             	   $("#yangshi").removeAttr("hidden");
+	                },
+	               complete:function(){
+	             	   $("#yangshi").attr("hidden","true");
+	                },
+	            success:function(data){
+	            	if (data.length==0) {
+						return;
+					}
+	            	//重新构建table  
+             		console.log(data);
+             		$('#black').dataTable().fnClearTable();   //将数据清除  
+         　				$('#black').dataTable().fnAddData(data,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+	            },
+	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+	            }});
+        });  
+        
+		//删除掉关键字      
+        function deleteKeyword(){
+        	 var param = $("#deletKey").val();
+        	 console.log(param);
+        	 var url="http://52.33.5.80:8080/sdk/admin/sys/dl"+"?keyword="+param;
+ 	        $.ajax({
+ 	            url:url,
+ 	            dataType:'jsonp',
+ 	            processData: false, 
+ 	            type:'POST',
+ 	            data:{"keyword":param},
+ 	           beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },
+ 	            success:function(data){
+ 	            	var url="http://52.33.5.80:8080/sdk/admin/sys/getBlack";
+ 	   	        $.ajax({
+ 	   	            url:url,
+ 	   	            dataType:'jsonp',
+ 	   	            processData: false, 
+ 	   	            type:'get',
+ 	   	        beforeSend: function(){
+              	   $("#yangshi").removeAttr("hidden");
+                 },
+                complete:function(){
+              	   $("#yangshi").attr("hidden","true");
+                 },
+ 	   	            success:function(data){
+ 	   	            	//重新构建table  
+ 	                		console.log(data);
+ 	                		$('#black').dataTable().fnClearTable();   //将数据清除  
+ 	            　				$('#black').dataTable().fnAddData(data,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+ 	   	            },
+ 	   	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	   	              
+ 	   	            }});
+ 	            	
+ 	            	
+ 	            	if(data==1){
+              		alert("删除成功");
+ 	            	}else {
+						alert("没有对应黑名单关键字")
+					}  
+ 	            },
+ 	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+ 	            }});
+        }
+		
+      //保存关键字      
+        function saveKeyword(){
+        	 var param = $("#saveKey").val();
+        	 console.log(param);
+        	 var url="http://52.33.5.80:8080/sdk/admin/sys/bc"+"?keyword="+param;
+ 	        $.ajax({
+ 	            url:url,
+ 	            dataType:'jsonp',
+ 	            processData: false, 
+ 	            type:'POST',
+ 	            data:{"keyword":param},
+ 	           beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },
+ 	            success:function(data){
+ 	            	var url="http://52.33.5.80:8080/sdk/admin/sys/getBlack";
+ 	   	        $.ajax({
+ 	   	            url:url,
+ 	   	            dataType:'jsonp',
+ 	   	            processData: false, 
+ 	   	            type:'get',
+ 	   	        beforeSend: function(){
+              	   $("#yangshi").removeAttr("hidden");
+                 },
+                complete:function(){
+              	   $("#yangshi").attr("hidden","true");
+                 },
+ 	   	            success:function(data){
+ 	   	            	//重新构建table  
+ 	                		console.log(data);
+ 	                		$('#black').dataTable().fnClearTable();   //将数据清除  
+ 	            　				$('#black').dataTable().fnAddData(data,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+ 	   	            },
+ 	   	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	   	              
+ 	   	            }});
+ 	            	
+ 	            	
+ 	            	if(data==1){
+              			alert("保存成功");
+ 	            	}else {
+						alert("保存失败")
+					}  
+ 	            },
+ 	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+ 	            }});
+        }
+    </script> 
+</head>  
+<body class="gray-bg">  
+<div class="wrapper wrapper-content animated fadeInRight">
+<div class="ibox-content">
+	<table id="black" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>黑名单关键字</th>
+                <th>详细说明</th>
+                <th>被黑时间</th>
+            </tr>
+        </thead>
+    </table>
+</div>   
+<form class="form-inline">
+  <div class="form-group">
+    <label class="sr-only" for="exampleInputEmail3">需要删除的关键字</label>
+    <input type="text" class="form-control" id="deletKey" placeholder="输入黑名单关键字">
+  </div>
+  <button type="button" onclick="deleteKeyword()" class="btn btn-primary">清除这个关键字</button>
+</form>
+<br>
+<form class="form-inline">
+  <div class="form-group">
+    <label class="sr-only" for="exampleInputEmail3">需要添加的黑名单关键字</label>
+    <input type="text" class="form-control" id="saveKey" placeholder="输入黑名单关键字">
+  </div>
+  <button type="button" onclick="saveKeyword()" class="btn btn-primary">添加这个关键字到黑名单中</button>
+</form>
+ <div class="spinner" hidden="true" id="yangshi" onclick="test()">
+		  <div class="dot1"></div>
+		  <div class="dot2"></div>
+	  </div>
+</div>
+</body>  
+
+</html>  

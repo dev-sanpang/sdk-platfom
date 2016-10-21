@@ -1,0 +1,142 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>package优先级</title>  
+    <link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">    
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">  
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico"> 
+    <link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="css/loading.css" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <script src="http://www.zhuhaihengxin.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://www.zhuhaihengxin.com/libs/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="js/plugins/layer/laydate/laydate.js"></script>
+	<script type="text/javascript" charset="utf8" src="http://www.zhuhaihengxin.com/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script> 
+    <script type="text/javascript">  
+        $(window).on('load', function () {
+        	
+        	//初始化安装包列表
+	        var url="http://52.33.5.80:8080/sdk/admin/sys/showLevelForPackage";
+	        $.ajax({
+	            url:url,
+	            dataType:'jsonp',
+	            processData: false, 
+	            type:'get',
+	            beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },  
+	            success:function(data){
+	            	
+	                		$.each(data,function(name,value) {
+
+	                			var s1=	"<option  value ='1' >等级1</option>";
+	        					var s2=	"<option  value ='2' >等级2</option>";
+	        					var s3=	"<option  value ='3' >等级3</option>";
+	        					var s4=	"<option  value ='4' >等级4</option>";
+	        					var s5=	"<option  value ='5' >等级5</option>";
+	        	            	
+	                			if(value.level==1){
+	                				 s1="<option  value ='1' selected >等级1</option>";
+	                			}
+	                			if(value.level==2){
+	                				 s2="<option  value ='2' selected >等级2</option>";
+	                			}
+	                			if(value.level==3){
+	                				 s3="<option  value ='3' selected >等级3</option>";
+	                			}
+	                			if(value.level==4){
+	                				 s4="<option  value ='4' selected >等级4</option>";
+	                			}
+	                			if(value.level==5){
+	                				 s5="<option  value ='5' selected >等级5</option>";
+	                			}
+	                			
+	                    		$('#packageSetting').append(
+	                    		"<tr><td>"
+	                        	+"<label id='"+name+"label'>"+value.packagename+"</label>"	
+	                        	+"</td>"
+	                        	+"<td>"
+	                        	+"<select placeholder='优先级' id = 'newselect"+value.id+"' class='form-control layer-date'>"
+	                        	+s1
+	                        	+s2
+	                        	+s3
+	                        	+s4
+	                        	+s5
+	                        	+"</select>"
+	                        	+"</td>"
+	                        	+"<td>"
+	                        	+"<input type='button'  class='btn btn-info' value='提交更改' id='"+value.id+"' onclick='submitSetLevel(id)'/>"	
+	                        	+"</td>"
+	        					+"</tr>"                
+	                    		)
+	                        });
+	            },
+		            error:function(XMLHttpRequest, textStatus, errorThrown) {
+		            	$("#yangshi").attr("hidden","true");
+		            	alert("后台有问题 ,找王巨壁")
+		            }
+	        	});
+	        });
+        
+        
+        function submitSetLevel(id){
+        	var selectId = "#newselect"+id;
+        	var level = $(selectId).find("option:selected").val();
+        	
+        	var url="http://52.33.5.80:8080/sdk/admin/sys/setLevelForPackage?level="+level+"&id="+id;
+	        $.ajax({
+	            url:url,
+	            dataType:'jsonp',
+	            processData: false, 
+	            type:'get',
+	            beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },  
+	            success:function(data){
+	            	if(data==1){
+	            		alert("修改成功");
+	            	}
+	                        
+	            },
+		            error:function(XMLHttpRequest, textStatus, errorThrown) {
+		            	 $("#yangshi").attr("hidden","true");
+		            	alert("后台有问题 ,找王巨壁")
+		            }
+	        	});
+        }
+    </script> 
+</head>  
+<body class="gray-bg">  
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <table id="packageSetting" class="table table-hover" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>包名</th>
+                <th>优先级</th>
+				<th>操作</th>
+            </tr>
+        </thead>
+
+ 
+    <div class="spinner" hidden="true" id="yangshi" onclick="test()">
+		  <div class="dot1"></div>
+		  <div class="dot2"></div>
+	  </div>
+
+</div>
+</body>  
+
+</html>  

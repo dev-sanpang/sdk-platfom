@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- http://www.cnblogs.com/landeanfen/p/4976838.html -->
+<meta name="keywords" content="">
+<meta name="description" content="基于Bootstrap3采用了主流的左右两栏式布局学习bootstraptable">
+
+<title>学习bootstrap-table</title>
+
+
+<!--1、Jquery组件引用  -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<!--2、bootstrap组件引用  --> 
+<script src="js/bootstrap.min.js?v=3.3.6"></script> 
+<link href="css/bootstrap.min.css?v=3.3.6&11" rel="stylesheet">
+
+<!--3、bootstrap table组件以及中文包的引用  -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>  
+
+
+<!--4、页面Js文件的引用  -->       
+<script src="js/demo/bootstrap-table-zws.min.js"></script>
+
+<style type="text/css">
+.org-bg{
+background-color: #B8860B;
+	color: #333;
+    border-color: #ccc;
+}
+.org-bgx{
+background-color: #B8860B;
+	color: #333;
+    border-color: #ccc;
+}
+.btn-fl{
+	float:left;
+	margin-right:10px;
+}
+.div-top ul{
+	list-style:none;
+	display:inline;
+	white-space: nowrap;
+	} 
+.div-top{
+	width: 100%;
+	height: 100px;
+	margin: 10px 30px;
+}
+
+.div-top2{
+	width: 100%;
+	margin-top:20px;
+}
+
+.div-top li	{
+	width:20%;
+	height:100px;
+	margin-right:4%;
+	float:left;
+	 display:block; 
+	 border: 1px solid  gray;
+	 text-align:center;
+}
+
+.div-top li	div{
+	border-top: 1px solid  gray;
+	text-align:center;
+}
+.div-h{
+	height: 40%;
+}
+.panel-body {
+    padding: 30px;
+}
+.btn1 {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+a{
+	color: #333;
+}
+</style>
+</head>
+<body class="gray-bg">
+
+<div class="div-top">
+	<div >
+		<h4>新增用户数</h4>
+	</div>
+	<ul>
+		<li>
+			<div class="div-h">今日新增</div>
+			<div>321,222</div>
+		</li>
+		<li>
+			<div class="div-h">昨日新增</div>
+			<div>78,222</div>
+		</li>
+		<li>
+			<div class="div-h">过去七天新增</div>
+			<div>3,222</div>
+		</li>
+		<li>
+			<div class="div-h">过去三十天新增</div>
+			<div>21,222</div>
+		</li>
+	</ul>
+</div>
+<!--table start  -->
+ <div class="panel-body" style="padding-bottom:0px;">
+       <!--  <div class="panel panel-default">
+            <div class="panel-heading">查询条件</div>
+            <div class="panel-body">
+                <form id="formSearch" class="form-horizontal">
+                    <div class="form-group" style="margin-top:15px">
+                        <label class="control-label col-sm-1" for="txt_search_departmentname">部门名称</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="txt_search_departmentname">
+                        </div>
+                        <label class="control-label col-sm-1" for="txt_search_statu">状态</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="txt_search_statu">
+                        </div>
+                        <div class="col-sm-2" style="text-align:left;">
+                            <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">查询</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>       --> 
+	<div id="toolbar" >
+        <div class="btn-group ">
+            <button id="btn_add" type="button" class="btn vbx btn-default" value="APP">
+                <span class="glyphicon glyphicon-plus1" aria-hidden="true"></span>APPS
+            </button>
+            <button id="btn_edit" type="button" class="btn vbx btn-default" value="CT">
+                <span class="glyphicon glyphicon-pencil1" aria-hidden="true"></span>国家
+            </button>
+            <button id="btn_delete" type="button" class="btn vbx btn-default" value="VS">
+                <span class="glyphicon glyphicon-remove1" aria-hidden="true"></span>版本
+            </button>
+        </div>
+        <!--  年月日  -->
+         <div  class="btn-group">
+            <button id="btn_add" type="button" class="btn1 vbd btn-default" value="DAY">
+                <span class="glyphicon glyphicon-plus1" aria-hidden="true"></span>日
+            </button>
+            <button id="btn_edit" type="button" class="btn1 vbd btn-default" value="WEK">
+                <span class="glyphicon glyphicon-pencil1" aria-hidden="true"></span>周
+            </button>
+            <button id="btn_delete" type="button" class="btn1 vbd btn-default" value="MTH">
+                <span class="glyphicon glyphicon-remove1" aria-hidden="true"></span>月
+            </button>
+        </div>
+        <button type="button" onclick="queryData()" class="btn btn-sm btn-primary"> 查询</button>
+           </div>
+        <table id="tb_departments"></table>
+    </div>
+    
+    <script type="text/javascript">
+    $(function () {
+
+        //1.初始化Table
+        var oTable = new TableInit();
+        oTable.Init();
+
+        //2.初始化Button的点击事件
+        var oButtonInit = new ButtonInit();
+        oButtonInit.Init();
+        $(".vbd").click(function(){ 
+        	$(".org-bgx").removeClass("org-bgx");
+        	$(this).addClass("org-bgx").removeClass("btn-default");
+        	console.log($(".org-bgx").val());
+        });
+        $(".vbx").focus(function(){ 
+        	$(".org-bg").removeClass("org-bg");
+        	$(this).addClass("org-bg").removeClass("btn-default");
+        });
+    });
+	/* 点击查询按钮出发事件 */
+	function queryData(){
+		 var oTable = new TableInit();
+		oTable.Init();
+	}
+	
+    var TableInit = function () {
+        var oTableInit = new Object();
+        //初始化Table
+        oTableInit.Init = function () {
+            $('#tb_departments').bootstrapTable({
+                url: 'bt/getJsonData',         //请求后台的URL（*）
+                method: 'get',                      //请求方式（*）
+                toolbar: '#toolbar',                //工具按钮用哪个容器
+                striped: true,                      //是否显示行间隔色
+                cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                pagination: true,                   //是否显示分页（*）
+                sortable: false,                     //是否启用排序
+                sortOrder: "asc",                   //排序方式
+                queryParams: oTableInit.queryParams,//传递参数（*）
+                sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                pageNumber:1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                       //每页的记录行数（*）
+                pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+                search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+                strictSearch: false,
+                showColumns: true,                  //是否显示所有的列
+                showRefresh: true,                  //是否显示刷新按钮
+                minimumCountColumns: 2,             //最少允许的列数
+                clickToSelect: false,                //是否启用点击选中行
+                height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                uniqueId: "page-number",                     //每一行的唯一标识，一般为主键列
+                showToggle:false,                    //是否显示详细视图和列表视图的切换按钮
+                cardView: false,                    //是否显示详细视图
+                detailView: false,                   //是否显示父子表
+                columns:[{
+                    field: 'showdate',
+                    title: '日期'
+                }, {
+                    field: 'contry1',
+                    title: '国家1'
+                }, {
+                    field: 'contry2',
+                    title: '国家2'
+                },  {
+                    field: 'contry3',
+                    title: '国家3'
+                }, {
+                    field: 'contry4',
+                    title: '国家4'
+                },{
+                    field: 'contry5',
+                    title: '国家5'
+                },{
+                    field: 'contryo',
+                    title: '其他国家'
+                }, {
+                    field: 'contrya',
+                    title: '全部'
+                } ]
+            });
+        };
+
+        //得到查询的参数
+        oTableInit.queryParams = function (params) {
+            var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                limit: params.limit,   //页面大小
+                offset: params.offset,  //页码
+                departmentname: $(".org-bgx").val(),
+                statu: $(".org-bg").val()
+            };
+            return temp;
+        };
+        return oTableInit;
+    };
+
+
+    var ButtonInit = function () {
+        var oInit = new Object();
+        var postdata = {};
+
+        oInit.Init = function () {
+            //初始化页面上面的按钮事件
+        };
+
+        return oInit;
+    };
+    
+    
+    
+    </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<style type="text/css"> 
+        #fm{  margin: 0;  padding: 10px 30px; } 
+        .ftitle 
+        { 
+            font-size: 14px; 
+            font-weight: bold; 
+            padding: 5px 0; 
+            margin-bottom: 10px; 
+            border-bottom: 1px solid #ccc; 
+        } 
+        .fitem 
+        { 
+            margin-bottom: 5px; 
+        } 
+        .fitem label 
+        { 
+            display: inline-block; 
+            width: 80px; 
+        } 
+    </style> 
+
+<form id="fm" method="post"> 
+<table style="width: 1000px; padding: 20px; font-size: 10px">
+	<tr>
+		<td>事件名：<input id="eventid" class="easyui-textbox" type="text" name="eventid"></td>
+		<td>事件说明：<input id="eventname"  class="easyui-textbox" type="text"name="eventname"></td>
+		<td>App名： <input id="appname"  class="easyui-textbox" type="text"name="appname" value="SDK" readonly="readonly"> 
+			<!-- <select id="appname" name="appname" class="easyui-combobox">
+		 		<option value="WeShare">WeShare</option>   
+		 	</select> -->
+		</td>
+		<td>备注：<input id="remark"  class="easyui-textbox" type="text"name="remark" >
+		 
+		</td>
+		<td><a href="javascript:void(0)" class="easyui-linkbutton" onclick="saveuser()" iconcls="icon-save">保存</a> </td>
+	</tr>
+</table>
+</form>
+<div closed="true" class="easyui-window" positon:relative title="提交 " id="scqueren_" resizable="true" style="width: 200px; height: 100px">
+		<form>
+			<input class="easyui-button" type='button' value="删除" onclick="sc_jrjg()">
+			<input type='button' value="取消" onclick="$('#scqueren_').window('close')">
+		</form>
+	</div>
+<table id="dg"></table>
+ <script type="text/javascript">
+        var url;
+        var type;
+        
+        function saveuser() {
+            $("#fm").form("submit", {
+                url: '/sdkManage/expain/add',
+                onsubmit: function () {
+                    return $(this).form("validate");
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        $.messager.alert("提示信息", "操作成功");
+                        $("#dlg").dialog("close");
+                        $("#dg").datagrid("load");
+                    }
+                    else {
+                        $.messager.alert("提示信息", "操作失败");
+                    }
+                }
+            });
+        }
+      
+        
+    </script>
+<script>
+	var data_t;
+ 	$(function() {
+		$('#dg').datagrid({
+			title : '事件详情',
+			width : 1050,
+			height : 700,
+			url : '/sdkManage/expain/eventexplain',
+			method : 'POST',
+			singleSelect : false,
+			ctrlSelect:true,
+			pagination : true,
+			rownumbers : true,
+			onRowContextMenu : onRowContextMenu,
+			pageSize: 20,
+			columns : [ [ {
+				field : 'id',
+				title : '事件详情ID',
+				width : 100,
+				align : 'center',
+				hidden:true
+			}, {
+				field : 'eventid',
+				title : '事件名',
+				width : 250,
+				align : 'center'
+			}, {
+				field : 'eventname',
+				title : '事件说明',
+				width : 300,
+				align : 'center'
+			}, {
+				field : 'appname',
+				title : 'app',
+				width : 80,
+				align : 'center'
+			}, {
+				field : 'remark',
+				title : '备注',
+				width : 80,
+				align : 'center'
+			}] ],
+		});
+		$('#dg').datagrid('getPager').pagination({
+			pageList : [ 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ],//可以设置每页记录条数的列表
+			beforePageText : '第',//页数文本框前显示的汉字
+			afterPageText : '页    共 {pages} 页',
+			displayMsg : '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+		});
+		
+
+		function onRowContextMenu(e, rowIndex, rowData) { //右键时触发事件
+			//三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
+			e.preventDefault(); //阻止浏览器捕获右键事件
+			//        $(this).datagrid("clearSelections"); //取消所有选中项
+			if(rowIndex == -1){
+				return;
+			}
+			$(this).datagrid("selectRow", rowIndex); //根据索引选中该行
+			console.log(rowIndex);
+			$('#menu').menu('show', {
+				//显示右键菜单
+				left : e.pageX,//在鼠标点击处显示菜单
+				top : e.pageY
+			});
+			data_t = rowData;
+		}
+		
+		$('#query').on('click',function(){
+			$('#dg').datagrid('reload',{
+					eventName:$('#eventName').val(),
+					eventid:$('#eventid').val(),
+					appName:$('#appName').combobox('getValue')
+				});
+		});
+	});
+ 	/* 删除方案--------------------------------------------------------------- */
+			function sc_jrjg(){
+				 $.ajax({
+					type : "post",
+					url : "/sdkManage/expain/del",
+					dataType : 'json',
+					cache : "false",
+					data : {
+						"id" : data_t.id
+					},
+					success : function(save_date) {
+						
+						$('#dg').datagrid('reload');
+					 	$.messager.show({  
+			                title: '提示',  
+			                msg: '删除成功',  
+			                showType: 'show',
+			                style:{
+								left:'',
+								right:1000,
+								bottom:'',
+				                style:{
+									left:'',
+									right:1000,
+									bottom:''
+								}
+							}
+						})
+						
+						$("#qrsc_").window("close")
+					}
+				}); 
+ 	}
+ 	
+ 	/* 删除方案------------结束--------------------------------------------------- */
+</script>
+
+<p>注：操作数据请在数据上点击右键查看。</p>
+<div id="menu" class="easyui-menu" style="width: 50px; display: none;">
+
+	<div data-options="iconCls:'icon-save'" onclick="$('#qrsc_').window('open')">删除</div>
+	<!--具体的菜单事件请自行添加，跟toolbar的方法是基本一样的-->
+	<div>修改</div>
+</div>
+<div closed="true" class="easyui-window" positon:relative title="确认提交 " id="qrsc_" resizable="true" style="width: 320px; height: 140px;">
+		<form>
+			<h3>点击删除将删除该事件</h3>
+			<input class="easyui-button" type='button' value="确认删除" onclick="sc_jrjg()">
+			<input type='button' value="取消" onclick="$('#qrsc_').window('close')">
+		</form>
+</div>

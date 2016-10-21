@@ -1,0 +1,55 @@
+<section>
+    <div class="panel panel-signin">
+        <div class="panel-body">
+            <div class="logo text-center">
+                <img src="images/yiba.png" alt="Chain Logo">
+            </div>
+            <br/>
+            <h4 class="text-center mb5">Already a Member?</h4>
+
+            <p class="text-center">Sign in to your account</p>
+
+            <div class="mb30"></div>
+
+            <form id="signinForm">
+                <div class="input-group mb15">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input type="text" class="form-control" id="userName" name="userName" ng-model="userDto.userName"
+                           placeholder="用戶名" 　ng-focus="msgcancel()">
+                </div>
+                <!-- input-group -->
+                <div class="input-group mb15">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                    <input type="password" class="form-control" id="password" name="password"
+                           ng-model="userDto.password"
+                           placeholder="登陆密码" ng-keyup="myKeyup($event)" 　ng-focus="msgcancel()">
+                </div>
+                <!-- input-group -->
+                <div class="clearfix">
+                    <div class="pull-left">
+                        <div class="ckbox ckbox-primary mt10">
+                            <input type="checkbox" id="rememberMe" value="1">
+                            <label for="rememberMe">记住登陆状态</label>
+                        </div>
+                    </div>
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success" ng-click="signin()">登陆 <i
+                                class="fa fa-angle-right ml5"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- input-group -->
+                <div class="errorForm"></div>
+                <div class="errorForm" ng-if="msgshow"><label class="error">{{msg}}</label></div>
+            </form>
+
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <a ui-sref="signup" class="btn btn-primary btn-block">Not yet a
+                Member? Create Account Now</a>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel -->
+</section>

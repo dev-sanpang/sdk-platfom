@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<table data-options="fit:true" style="padding-left: 120px;">
+			<td data-options="fit:true" >开始日期：</td>
+			<td>
+				<div data-options="fit:true">
+				<input id="eventUserNumStartDate" name="startDate">
+				</div>
+			</td>
+
+			<td data-options="fit:true">结束日期：</td>
+			<td>
+				<div data-options="fit:true">
+				<input id="eventUserNumEndDate" name="endDate">
+				</div>
+			</td>
+			
+			<td data-options="fit:true">事件：</td>
+			<td>
+				<div data-options="fit:true">
+				<input id="events" name="events" style="width:200px">
+				</div>
+			</td>
+			
+			<td data-options="fit:true">
+			<td colspan="2">
+				<input type="button" id="eventUserNumFind" value="查询"/>
+			</td>
+			<td data-options="fit:true">
+	</table>
+	
+
+<div style="padding-left: 120px;">
+	<table id="eventUserNumTable" ></table>
+</div>	
+
+
+<script type="text/javascript">
+	$(function(){
+		$('#eventUserNumStartDate').combobox({    
+		    url:'/sdkManage/device/showDates',    
+		    valueField:'date',    
+		    textField:'date'   
+		}); 
+		$('#eventUserNumEndDate').combobox({    
+		    url:'/sdkManage/device/showDates',    
+		    valueField:'date',    
+		    textField:'date'   
+		});
+		$('#events').combobox({    
+		    url:'/sdkManage/expain/eventexplain',    
+		    valueField:'eventid',    
+		    textField:'eventname' 
+		});
+	})
+	
+	$("#eventUserNumFind").click(function(){ 
+		var sdate = $('#eventUserNumStartDate').combobox('getValue');
+		var edate = $('#eventUserNumEndDate').combobox('getValue');
+		var eventToken = $('#events').combobox('getValue');
+		
+		var Start_day = sdate.split("_");
+		var End_day = edate.split("_");
+		
+		if(sdate == ""){
+			alert("请选择开始时间");
+			return ;
+		}
+		
+		if(edate==""){
+			alert("请选择截止时间");
+			return ;
+		}
+		
+		if(Start_day[0]>End_day[0]){
+			alert("开始时间大于截至时间,请重新选择");
+			return ;
+		}
+		if(Start_day[0]==End_day[0] && Start_day[1]>End_day[1]){
+			alert("开始时间大于截至时间,请重新选择");
+			return ;
+		}
+		if(Start_day[0]==End_day[0]&&Start_day[1]==End_day[1] && Start_day[2]>End_day[2]){
+			alert("开始时间大于截至时间,请重新选择");
+			return ;
+		}
+		
+		
+		$('#eventUserNumTable').datagrid({
+    		url : "/sdkManage/event/eventUserNum",
+    		width : 900,
+    		height : 670,
+    		method : 'POST',
+			title : "事件数及独立用户数",
+			pagination : true,
+			fitColumns : true,
+			rownumbers : true,
+    		queryParams : {
+    			'startDate' : sdate,
+    			'endDate' : edate,
+    			'eventToken' : eventToken
+    		}, 
+    		pageNumber:1,
+    		pageSize: 10,
+    		 columns : [ [  {
+    			field : 'showDate',
+    			title : '日期',
+    			width : 100,
+    			align : 'center'
+    		}, {
+    			field : 'eventNum',
+    			title : '事件数',
+    			width : 100,
+    			align : 'center'
+    		}, {
+    			field : 'eventUserNum',
+    			title : '独立用户数',
+    			width : 100,
+    			align : 'center'
+    		}] ], 
+    	});  
+		
+		
+	})
+	
+</script>
+</body>
+</html>

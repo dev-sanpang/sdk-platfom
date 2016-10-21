@@ -1,0 +1,432 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>请求黑名单</title>  
+    <link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">    
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">  
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico"> 
+    <link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="css/loading.css" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <script src="http://www.zhuhaihengxin.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://www.zhuhaihengxin.com/libs/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="js/plugins/layer/laydate/laydate.js"></script>
+	<script type="text/javascript" charset="utf8" src="http://www.zhuhaihengxin.com/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script> 
+    <script type="text/javascript">  
+        $(window).on('load', function () {  
+        	//初始化DataTable
+	        $("#package").DataTable( {
+       				 //"ajax": "/sdkManage/device/installUsers",
+        			"columns": [
+		          		  			{ "data": "id" },
+		           				    { "data": "packagename" },
+		           				    { "data": "company"},
+		           				 	{ "data": "accesstime"}
+        						],
+      			"bSort" : false,
+      			"bFilter" : false,
+      			"oLanguage": { //国际化配置  
+                    "sProcessing" : "正在获取数据，请稍后...",    
+                     
+                    "sZeroRecords" : "没有您要搜索的内容",    
+                    "sInfo" : "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",    
+                    "sInfoEmpty" : "记录数为0",    
+                    "sInfoFiltered" : "(全部记录数 _MAX_ 条)",    
+                    "sInfoPostFix" : "",    
+                    "sSearch" : "搜索",    
+                    "sUrl" : "",    
+                    "oPaginate": {    
+                        "sFirst" : "第一页",    
+                        "sPrevious" : "上一页",    
+                        "sNext" : "下一页",    
+                        "sLast" : "最后一页"    
+                    }  
+                }
+    		} ); 
+        	
+        	//初始化安装包列表
+	        var url="http://52.33.5.80:8080/sdk/admin/sys/shPac";
+	        $.ajax({
+	            url:url,
+	            dataType:'jsonp',
+	            processData: false, 
+	            type:'get',
+	            beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },  
+	            success:function(data){
+             		$('#package').dataTable().fnClearTable();   //将数据清除  
+         　				$('#package').dataTable().fnAddData(data,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+	            },
+	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+	            }});
+        
+      //初始化已经设置过的包.
+        var url="http://52.33.5.80:8080/sdk/admin/sys/shoSett";
+        $.ajax({
+            url:url,
+            dataType:'jsonp',
+            processData: false, 
+            type:'get',
+            beforeSend: function(){
+         	   $("#yangshi").removeAttr("hidden");
+            },
+           complete:function(){
+         	   $("#yangshi").attr("hidden","true");
+            },  
+            success:function(data){
+            	
+            	$('#packageSetting').append(
+                		"<tr><td>"
+                    	+"<select placeholder='是否弹窗提醒' id = 'newPackageName' class='form-control layer-date' onclick='selectPackageName()' >"
+                    	+"</select>"
+                    	+"</td>"
+                    	+"<td>"
+                    	+"	<input type='text' id='newpwTotal' value = '100'/>"
+                    	+"</td>"
+                    	+"<td>"
+                    	// +"<input type='select' id='"+name+"tanchuang' value='"+isT+"'/>"	
+                    	+"<select placeholder='FreeWifi弹窗提醒' id = 'newselect' class='form-control layer-date'>"
+                    	+"<option selected value ='0' >FreeWifi弹</option>"
+                    	+"<option value = '1'>FreeWifi不弹</option>"
+                    	+"</select>"
+                    	+"<select placeholder='OpenWifi弹窗提醒' id = 'Openselect' class='form-control layer-date'>"
+                    	+"<option selected value ='0' >OpenWifi不弹</option>"
+                    	+"<option value = '1'>OpenWifi弹</option>"
+                    	+"</select>"
+                    	+"</td>"
+                    	+"<td>"
+                    	+"<input type='button' value='新增设置' id='newComit' onclick='saveNewSetting()'/>"	
+                    	+"</td>"
+    					+"</tr>"                
+                		)
+            	
+            	
+            	$.each(data,function(name,value) {
+            		var isT="弹";
+            		
+            		var select1="<select id = 'select"+name+"'>"
+            		//console.log("当前循环下标是:"+name)
+            		var select2="<option selected value ='0' >FreeWifi弹</option>";
+            		var select3="<option value = '1'>FreeWifi不弹</option>";
+            		var select4="</select>";
+            		
+            		var select5="<select id = 'Openselect"+name+"'>"
+            		//console.log("当前循环下标是:"+name)
+            		var select6="<option selected value ='0' >OpenWifi不弹</option>";
+            		var select7="<option value = '1'>OpenWifi弹</option>";
+            		var select8="</select>";
+            		
+            		if(value.setType==2){
+            			if(value.tanchuang==1){
+            				 select2="<option  value ='0' >FreeWifi弹</option>";
+                    		 select3="<option selected value = '1'>FreeWifi不弹</option>";
+            			}
+            		}
+            		
+            		if(value.setType==3){
+            			if(value.tanchuang==1){
+            				 select6="<option  value ='0' >OpenWifi不弹</option>";
+                    		 select7="<option selected value = '1'>OpenWifi弹</option>";
+            			}
+            		}
+            		
+            		
+            		$('#packageSetting').append(
+            		"<tr><td>"
+                	+"<label id='"+name+"label'>"+value.packageName+"</label>"	
+                	+"</td>"
+                	+"<td>"
+                	+"	<input type='text' id='"+name+"pwTotal' value='"+value.pwTotal+"'/>"
+                	+"</td>"
+                	+"<td>"
+                	// +"<input type='select' id='"+name+"tanchuang' value='"+isT+"'/>"	
+                	+select1
+                	+select2
+                	+select3
+                	+select4
+                	+select5
+                	+select6
+                	+select7
+                	+select8
+                	+"</td>"
+                	+"<td>"
+                	+"<input type='button' value='提交设置' id='"+name+"' onclick='submitSetting(id)'/>"	
+                	+"</td>"
+					+"</tr>"                
+            		)
+                });
+            	
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown) {
+            	$("#yangshi").attr("hidden","true");
+	            	alert("后台异常,请求失败-------")
+            }});
+    });
+        
+        //修改设置
+        function submitSetting(data){
+        	console.log("当前选择的设置下标是:"+data)
+        	var t = "#select"+data;//Free弹窗的选择器
+        	var o = "#Openselect"+data;
+        	var b = "#"+data+"pwTotal";//流量多少的选择器
+        	var name="#"+data+"label";
+        	//var tbt =  $(t).val()
+        	var tbt = $(t).find("option:selected").val();
+        	var opentbt = $(o).find("option:selected").val();
+        	var free =  $(b).val();
+        	var pName = $(name).text();
+			
+        	if(free>100||free<0){
+        		alert("请输入0--100之间数值");
+        		return;
+        	}
+        	
+        	 var url="http://52.33.5.80:8080/sdk/admin/sys/xgp"+"?tbt="+tbt+"&free="+free+"&pName="+pName+"&tbtO="+opentbt;
+ 	        $.ajax({
+ 	            url:url,
+ 	            dataType:'jsonp',
+ 	            processData: false, 
+ 	            type:'get',
+ 	           beforeSend: function(){
+            	   $("#yangshi").removeAttr("hidden");
+               },
+              complete:function(){
+            	   $("#yangshi").attr("hidden","true");
+               },  
+ 	            success:function(data){
+ 	            	if(data==1){
+              		alert("设置成功");
+ 	            	}else {
+						alert("没有对应黑名单关键字")
+					} 
+ 	            	location.reload();
+ 	            },
+ 	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+ 	            }});
+        }
+        
+		//删除掉关键字      
+        function deleteKeyword(){
+        	 var param = $("#deletKey").val();
+        	 console.log(param);
+        	 var url="http://52.33.5.80:8080/sdk/admin/sys/dl"+"?keyword="+param;
+ 	        $.ajax({
+ 	            url:url,
+ 	            dataType:'jsonp',
+ 	            processData: false, 
+ 	            type:'POST',
+ 	            data:{"keyword":param},
+ 	           beforeSend: function(){
+            	   $("#yangshi").removeAttr("hidden");
+               },
+              complete:function(){
+            	   $("#yangshi").attr("hidden","true");
+               },  
+ 	            success:function(data){
+ 	            	var url="http://52.33.5.80:8080/sdk/admin/sys/getBlack";
+ 	   	        $.ajax({
+ 	   	            url:url,
+ 	   	            dataType:'jsonp',
+ 	   	            processData: false, 
+ 	   	            type:'get',
+ 	   	        beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },  
+ 	   	            success:function(data){
+ 	   	            	//重新构建table  
+ 	                		console.log(data);
+ 	                		$('#package').dataTable().fnClearTable();   //将数据清除  
+ 	            　				$('#package').dataTable().fnAddData(data,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+ 	   	            },
+ 	   	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	   	              
+ 	   	            }});
+ 	            	
+ 	            	
+ 	            	if(data==1){
+              		alert("删除成功");
+ 	            	}else {
+						alert("没有对应黑名单关键字")
+					}  
+ 	            },
+ 	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+ 	            }});
+        }
+		
+      //保存关键字      
+        function saveKeyword(){
+        	 var param = $("#saveKey").val();
+        	 console.log(param);
+        	 var url="http://52.33.5.80:8080/sdk/admin/sys/bc"+"?keyword="+param;
+ 	        $.ajax({
+ 	            url:url,
+ 	            dataType:'jsonp',
+ 	            processData: false, 
+ 	            type:'POST',
+ 	            data:{"keyword":param},
+ 	           beforeSend: function(){
+            	   $("#yangshi").removeAttr("hidden");
+               },
+              complete:function(){
+            	   $("#yangshi").attr("hidden","true");
+               },  
+ 	            success:function(data){
+ 	            	var url="http://52.33.5.80:8080/sdk/admin/sys/getBlack";
+ 	   	        $.ajax({
+ 	   	            url:url,
+ 	   	            dataType:'jsonp',
+ 	   	            processData: false, 
+ 	   	            type:'get',
+ 	   	            success:function(data){
+ 	   	            	//重新构建table  
+ 	                		console.log(data);
+ 	                		$('#package').dataTable().fnClearTable();   //将数据清除  
+ 	            　				$('#package').dataTable().fnAddData(data,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+ 	   	            },
+ 	   	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	   	              
+ 	   	            }});
+ 	            	
+ 	            	
+ 	            	if(data==1){
+              			alert("保存成功");
+ 	            	}else {
+						alert("保存失败")
+					}  
+ 	            },
+ 	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+ 	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+ 	            }});
+        }
+      
+      /**
+      	查找packageName列表
+		**/      
+      function selectPackageName(){
+    	//初始化安装包列表
+	        var url="http://52.33.5.80:8080/sdk/admin/sys/shPac";
+	        $.ajax({
+	            url:url,
+	            dataType:'jsonp',
+	            processData: false, 
+	            type:'get',
+	            beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },  
+	            success:function(data){
+	            	$.each(data,function(name,value) {
+	           			$("#newPackageName").append(
+	           				"<option value = '"+value.packagename+"'>"+value.packagename+"</option>"		
+	           			) 
+	            	});
+	            	$("#newPackageName").removeAttr("onclick");
+	            },
+	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+	            }});
+      }
+      
+      
+      /** 保存新的packageName的设置  **/
+      function saveNewSetting(){
+      	
+      	var tc = $("#newselect").find("option:selected").val();	
+      	var toltal =  $("#newpwTotal").val();
+      	var pName = $("#newPackageName").find("option:selected").val();	
+		var otc=$("#Openselect").find("option:selected").val();
+		console.log(otc);
+      	if(toltal>100||toltal<0||toltal==null||typeof(toltal) == "undefined"){
+      		alert("请输入0--100之间数值");
+      		return;
+      	}							
+      	if (typeof(pName) == "undefined"||pName==null) { 
+      	   alert("请选择包名");
+      	   return;
+      	}
+      	
+      	var url="http://52.33.5.80:8080/sdk/admin/sys/xgp"+"?tbt="+tc+"&free="+toltal+"&pName="+pName+"&tbtO="+otc;
+	        $.ajax({
+	            url:url,
+	            dataType:'jsonp',
+	            processData: false, 
+	            type:'get',
+	            beforeSend: function(){
+             	   $("#yangshi").removeAttr("hidden");
+                },
+               complete:function(){
+             	   $("#yangshi").attr("hidden","true");
+                },  
+	            success:function(data){
+	            	if(data==1){
+	              		alert("保存成功");
+	 	            	}else {
+							alert("没有对应黑名单关键字")
+						} 
+	 	            	location.reload();
+	            },
+	            error:function(XMLHttpRequest, textStatus, errorThrown) {
+	            	$("#yangshi").attr("hidden","true");
+ 	            	alert("后台异常,请求失败-------")
+	            }});
+      }
+    </script> 
+</head>  
+<body class="gray-bg"> 
+<div class="wrapper wrapper-content animated fadeInRight">
+  <div class="ibox-content"> 
+	<table id="package" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>包名</th>
+                <th>所属公司</th>
+                <th>接入时间</th>
+            </tr>
+        </thead>
+    </table>
+    <hr>
+  </div>
+  <div  class="ibox-content">
+    <table id="packageSetting" class="table table-striped" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>包名</th>
+                <th>获取freewifi的百分比(%)</th>
+                <th>弹窗</th>
+				<th>操作</th>
+            </tr>
+        </thead>
+    </table>
+    <div class="spinner" hidden="true" id="yangshi" onclick="test()">
+		  <div class="dot1"></div>
+		  <div class="dot2"></div>
+	  </div>
+  </div>
+</div>
+</body>  
+
+</html>  

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>事件及独立用户数</title>
+		<link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+		<link rel="shortcut icon" href="favicon.ico">
+		<link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+		<link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+		<link href="css/animate.min.css" rel="stylesheet">
+		<link href="css/animate.min.css" rel="stylesheet">
+		<link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+		<link href="css/loading.css" rel="stylesheet">
+		<link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+	</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+		<label for="id_select">开始时间</label>
+		<select class="selectpicker bla bla bli" id="startTime" data-live-search="true">  
+    </select>
+
+		<label for="id_select">结束时间</label>
+		<select class="selectpicker bla bla bli" id="endTime" data-live-search="true">  
+    </select>
+
+		<label for="id_select">事件</label>
+		<select class="selectpicker bla bla bli" id="eventToken" data-live-search="true">
+    	<option value="" ></option>
+    </select>
+
+		<button class="btn btn-primary" type="submit" id="search" onclick="search()">查询</button>
+	<div  class="ibox-content">
+		<table id="example-aaa" class="display" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>时间</th>
+					<th>事件数</th>
+					<th>独立用户数</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	  <div class="spinner" hidden="true" id="yangshi" onclick="test()">
+		  <div class="dot1"></div>
+		  <div class="dot2"></div>
+	  </div>
+</div>
+		<script src="http://www.zhuhaihengxin.com/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="http://www.zhuhaihengxin.com/libs/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+		<script src="js/plugins/layer/laydate/laydate.js"></script>
+		<script type="text/javascript" charset="utf8" src="http://www.zhuhaihengxin.com/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+		<script type="text/javascript">
+			var initurl = "/sdkManage/device/showDates";
+			var packurl = "/sdkManage/expain/eventexplain";
+			$(window).on('load', function() {
+				$.ajax({ //初始化日期列表
+					type: 'get', //可选get  
+					　　url: initurl,
+					　　data: {
+						"start": "2016-08-23"
+					},
+					　　dataType: 'Json', //服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+					　　success: function(msg) {
+						var selectedval = "";
+						$.each(msg, function(n, value) {
+							$("#startTime").append("<option value='" + value + "'>" + value + "</option>");
+							$("#endTime").append("<option value='" + value + "'>" + value + "</option>");
+							if (n == 0) {
+								selectedval = value;
+							}
+						})
+						$('.selectpicker').selectpicker('val', selectedval); //单选
+						$(".selectpicker").selectpicker({
+							noneSelectedText: '请选择'
+						});
+						$('.selectpicker').selectpicker('refresh');　　
+					},
+					　　error: function() {　　
+						alert('error');　　
+					}
+				})
+
+				$.ajax({ //初始化包名列表
+						type: 'get', //可选get  
+						　　url: packurl,
+						　　data: {
+							"start": "2016-08-23"
+						},
+						　　dataType: 'Json', //服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+						　　success: function(msg) {
+							$.each(msg, function(n, value) {
+								$("#eventToken").append("<option value='" + value.eventid + "'>" + value.eventname + "</option>")
+							})
+							$(".selectpicker").selectpicker({
+								noneSelectedText: '请选择'
+							});
+							$('.selectpicker').selectpicker('refresh');　　
+						},
+						　　error: function() {　　
+							alert('error');　　
+						}
+					})
+					// $('.selectpicker').selectpicker('hide');  
+
+				var sdate = $("#startTime").find("option:selected").text();
+				var edate = $("#endTime").find("option:selected").text();
+				var eventToken = $("#eventToken").find("option:selected").val();
+
+				$("#example-aaa").DataTable({
+					/* "ajax": "data/objects2.json", */
+					  "ajax": {
+	       			      "url": "/sdkManage/event/eventUserNumList",
+	       			      "type":"post", 
+	       			      "data":{"startDate":sdate,"endDate":edate,"eventToken":eventToken},
+	       			      "dataSrc": "data"
+   			   			},  
+					"columns": [{
+						"data": "showDate"
+					}, {
+						"data": "eventNum"
+					}, {
+						"data": "eventUserNum"
+					}],
+					/*  "aLengthMenu" : [11, 21, 60], */
+					"bSort": false,
+					"bFilter": false,
+					"oLanguage": { //国际化配置  
+						"sProcessing": "正在获取数据，请稍后...",
+						"sLengthMenu": "显示 _MENU_ 条",
+						"sZeroRecords": "没有您要搜索的内容",
+						"sInfo": "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",
+						"sInfoEmpty": "记录数为0",
+						"sInfoFiltered": "(全部记录数 _MAX_ 条)",
+						"sInfoPostFix": "",
+						"sSearch": "搜索",
+						"sUrl": "",
+						"oPaginate": {
+							"sFirst": "第一页",
+							"sPrevious": "上一页",
+							"sNext": "下一页",
+							"sLast": "最后一页"
+						}
+					}
+				});
+
+				$.ajax({ //初始化 .请求当天的数据
+					　　
+					type: 'post', //可选get  
+					　　url: '/sdkManage/event/eventUserNum',
+					　　data: {
+						"startDate": sdate,
+						"endDate": edate,
+						"eventToken": eventToken
+					},
+					　　dataType: 'text', //服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+					　　success: function(msg) {
+						var msgObj = JSON.parse(msg);
+						//重新构建table  
+						$('#example-aaa').dataTable().fnClearTable(); //将数据清除  
+						　
+						$('#example-aaa').dataTable().fnAddData(msgObj, true); //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+						　　　
+					},
+					　　error: function() {　　 
+						$("#yangshi").attr("hidden","true");
+	 	            	alert("后台异常,请求失败-------") 
+						　　}
+				})
+
+			});
+
+			/*校验参数..然后调用后台查询数据*/
+			function search() {
+				var sdate = $("#startTime").find("option:selected").text();
+				var edate = $("#endTime").find("option:selected").text();
+				var eventToken = $("#eventToken").find("option:selected").val();
+				var Start_day = sdate.split("_");
+				var End_day = edate.split("_");
+
+				if (sdate == "") {
+					alert("请选择开始时间");
+					return;
+				}
+
+				if (edate == "") {
+					alert("请选择截止时间");
+					return;
+				}
+
+				if (Start_day[0] > End_day[0]) {
+					alert("开始时间大于截至时间,请重新选择");
+					return;
+				}
+				if (Start_day[0] == End_day[0] && Start_day[1] > End_day[1]) {
+					alert("开始时间大于截至时间,请重新选择");
+					return;
+				}
+				if (Start_day[0] == End_day[0] && Start_day[1] == End_day[1] && Start_day[2] > End_day[2]) {
+					alert("开始时间大于截至时间,请重新选择");
+					return;
+				}
+
+				$.ajax({ //根据结果查询数据
+					　　
+					type: 'post', //可选get  
+					　　url: '/sdkManage/event/eventUserNum',
+					　　data: {
+						"startDate": sdate,
+						"endDate": edate,
+						"eventToken": eventToken
+					},
+					　　dataType: 'text', //服务器返回的数据类型 可选XML ,Json jsonp script htmltext等 
+					  beforeSend: function(){
+	                	   $("#yangshi").removeAttr("hidden");
+	                   },
+	                  complete:function(){
+	                	   $("#yangshi").attr("hidden","true");
+	                   },
+					　　success: function(msg) {
+						var msgObj = JSON.parse(msg);
+						//重新构建table  
+						$('#example-aaa').dataTable().fnClearTable(); //将数据清除  
+						　
+						$('#example-aaa').dataTable().fnAddData(msgObj, true); //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+						　　　
+					},
+					　　error: function() {　　 //alert('error');  
+						　　}
+				})
+
+			}
+		</script>
+	</body>
+
+</html>

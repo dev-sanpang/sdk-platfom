@@ -1,0 +1,117 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理系统</title>
+    <link rel="stylesheet" type="text/css" href="themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+<!--     <script type="text/javascript" src="js/common.js"></script> -->
+
+    <script>
+        window.addTab = function (title, url) {
+            //setTimeout(console.info(11),3000);
+            if ($("#tt").tabs("exists", title)) {
+                $("#tt").tabs("select", title);
+            } else {
+                $("#tt").tabs("add", {
+                    title: title,
+                    closable: true,
+                    href: url
+                });
+            }
+        }
+
+    </script>
+</head>
+<body>
+<!--<div style="margin:10px 0;"></div>-->
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style="height:90px">
+        <img style="padding:2px" src="image/leapfrog.jpg" height="82.2" width="315">
+         <span style="float:right; padding-right:20px;" class="head">欢迎 <a href="javascript:void(0);" id="changePwd">修改密码</a>
+             <a href="javascript:void(0);" id="loginOut">退出登录</a></span>
+    </div>
+    <div data-options="region:'south',split:true" style="height:30px;">
+        <div align="center">By leapfrog(跳蛙科技)</div>
+    </div>
+    <div data-options="region:'west',split:true" title="导航菜单" style="width:296px">
+        <div class="easyui-accordion">
+            <div title="资料库" data-options="iconCls:'icon-ok'">
+                <div class="easyui-accordion">
+					<!-- <div title="车型库" style="width:auto;">
+						
+					</div> -->
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('车型库','carBank.html')">车型库</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px;" onclick="window.addTab('金融方案库','soluBank.html')">金融方案库</a>
+                </div>
+            </div>
+            <div title="申请订单" data-options="iconCls:'icon-ok'">
+                <div class="easyui-accordion" style="height:200px">
+                    <div title="新车" style="width:auto">
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="window.addTab('统计','count.html')">统计</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="window.addTab('人工初审','firstTrial.html')">人工初审</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="window.addTab('贷款审批','loanApproval.html')">贷款审批</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="window.addTab('待签合同','unsignedContract.html')">待签合同</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="window.addTab('放款','lender.html')">放款</a>
+                    </div>
+                    <div title="二手车" style="width:auto">
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="javascript:$('#p').panel('open')">统计</a><br>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="javascript:$('#p').panel('open')">人工初审</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="javascript:$('#p').panel('open')">贷款审批</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="javascript:$('#p').panel('open')">待签合同</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" style="width:285px"
+                           onclick="javascript:$('#p').panel('open')">放款</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div data-options="region:'east',split:true" title="East" style="width:100px;"></div>-->
+    <div data-options="region:'center',title:'后台管理系统'">
+        <div id="tt" class="easyui-tabs" data-options="fit:true">
+            <div title="欢迎使用" style="padding:20px;overflow:hidden;" id="home">
+
+                <h1>Welcome to 跳蛙科技后台管理系统，请先登录!</h1>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loginWin" class="easyui-window" modal="false" title="登录" collapsible="false" minimizable="false" closed="true" modal="false" shadow="true"
+     maximizable="false" icon="icon-save" style="width: 300px; height: 160px; padding: 5px;
+        background: #fafafa;">
+    <div class="easyui-layout" fit="true">
+        <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+            <table cellpadding=3>
+                <tr>
+                    <td>账号</td>
+                    <td><input id="username" class="easyui-textbox" type="text" class="txt01"/></td>
+                </tr>
+                <tr>
+                    <td>密码</td>
+                    <td><input id="password" class="easyui-textbox" type="Password" class="txt01"/></td>
+                </tr>
+            </table>
+        </div>
+        <div region="south" border="false" style="text-align: right; height: 30px; line-height: 30px;">
+            <a id="btnEp" class="easyui-linkbutton" icon="icon-ok" href="javascript:void(0)">
+                登录</a> <a id="cancel" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)"
+                          >取消</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

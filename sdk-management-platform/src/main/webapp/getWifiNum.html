@@ -1,0 +1,146 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>查询WIFI数量</title>  
+    <link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">    
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">  
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico"> 
+    <link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="css/loading.css" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <script src="http://www.zhuhaihengxin.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://www.zhuhaihengxin.com/libs/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="js/plugins/layer/laydate/laydate.js"></script>
+	<script type="text/javascript" charset="utf8" src="http://www.zhuhaihengxin.com/libs/datatables/1.10.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script> 
+    <script type="text/javascript">  
+        $(window).on('load', function () {
+  			$.ajax({  //初始化日期列表
+				          type:'get',//可选get  
+				                 　　url:'/sdkManage/device/showDates',  
+				                 　　data:{"start":"2016/08/23"},  
+				                 　　dataType:'Json',//服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+				                 　　success:function(msg){  
+				              var selectedval = "";
+							 $.each(msg,function(n,value){
+								$("#showTime").append("<option value='"+value+"'>"+value+"</option>");
+								if(n==0){
+									selectedval = value;
+								}
+							 })
+							$('.selectpicker').selectpicker('val', selectedval);//单选
+							$(".selectpicker").selectpicker({noneSelectedText:'请选择'});
+							$('.selectpicker').selectpicker('refresh');
+             　					　},  
+                 　　				  error:function(){  
+                 　　							alert('error');  
+                 　							　}  
+         	})
+  			
+            var sdate = $("#showTime").find("option:selected").text();
+	        
+	        
+	        $("#example-aaa").DataTable( {//初始化DataTable
+       				 //"ajax": "/sdkManage/device/installUsers",
+        			"columns": [
+		          		  			{ "data": "showDate" },
+		           				    
+		           				    { "data": "freewifiNum" },
+	           				    
+	           				    	{ "data": "openwifiNum" },
+           				    
+           				    		{ "data": "totalFreewifiNum" },
+           				    
+           				    		{ "data": "totalOpenwifiNum" }
+        						],
+      			 /*  "aLengthMenu" : [11, 21, 60], */
+      				"bSort" : false,
+      				"bFilter" : false,
+      				"oLanguage": { //国际化配置  
+                    "sProcessing" : "正在获取数据，请稍后...",    
+                    "sLengthMenu" : "显示 _MENU_ 条",    
+                    "sZeroRecords" : "没有您要搜索的内容",    
+                    "sInfo" : "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",    
+                    "sInfoEmpty" : "记录数为0",    
+                    "sInfoFiltered" : "(全部记录数 _MAX_ 条)",    
+                    "sInfoPostFix" : "",    
+                    "sSearch" : "搜索",    
+                    "sUrl" : "",    
+                    "oPaginate": {    
+                        "sFirst" : "第一页",    
+                        "sPrevious" : "上一页",    
+                        "sNext" : "下一页",    
+                        "sLast" : "最后一页"    
+                    }  
+                }
+    } ); 
+    
+        });  
+        
+        /*校验参数..然后调用后台查询数据*/
+        function search(){
+			var sdate = $("#showTime").find("option:selected").text();
+			
+	            $.ajax({  //根据结果查询数据
+				                 　　type:'get',//可选get  
+				                 　　url:'http://52.33.5.80:8080/sdk/admin/sys/getWifiNum'+'?showDate='+sdate,  
+				                 　　data:{"showDate":sdate},  
+				                 　　dataType:'jsonp',//服务器返回的数据类型 可选XML ,Json jsonp script htmltext等  
+		                   beforeSend: function(){
+		                	   $("#yangshi").removeAttr("hidden");
+		                   },
+		                  complete:function(){
+		                	   $("#yangshi").attr("hidden","true");
+		                   },   
+				                 　　success:function(msg){  
+                     		//重新构建table  
+                     		console.log(msg);
+                     		 $('#example-aaa').dataTable().fnClearTable();   //将数据清除  
+                 　					    $('#example-aaa').dataTable().fnAddData(msg,true);  //数据必须是json对象{对象}或json对象数组 [{对象},{对象}] 
+                 　  
+             　					　},  
+                 　　					error:function(){  
+                 　　							$("#yangshi").attr("hidden","true");
+                 　　		 	            	alert("后台异常,请求失败-------")
+                 　							　}  
+         			})
+	            
+	}
+            
+        
+    </script> 
+</head>  
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight"> 
+    <label for="id_select">查询时间</label>  
+    <select class="selectpicker bla bla bli" id="showTime"  data-live-search="true">  
+    </select>  
+    
+	<button class="btn btn-primary" type="submit" id="search" onclick="search()">查询</button>
+<div  class="ibox-content">
+	<table id="example-aaa" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>freewifi数量</th>
+                <th>openwifi数量</th>
+                <th>freewifi总量</th>
+                <th>openwifi总量</th>
+            </tr>
+        </thead>
+    </table>
+  </div>
+  <div class="spinner" hidden="true" id="yangshi" onclick="test()">
+		  <div class="dot1"></div>
+		  <div class="dot2"></div>
+	  </div>
+</div>
+</body>  
+
+
+</html>  

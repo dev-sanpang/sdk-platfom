@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/aop 
+                        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
+                        http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  
+                        http://www.springframework.org/schema/context  
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <!--数据源 读写 -->
+    <bean id="dataSourceRW" class="com.alibaba.druid.pool.DruidDataSource"
+        init-method="init" destroy-method="close">
+         <property name="driverClassName" value="${database.driverClassName}" />
+         <property name="url" value="${database.url}" />
+         <property name="username" value="${database.username}" />
+         <property name="password" value="${database.password}" />
+         <property name="initialSize" value="${database.initialSize}" />
+         <property name="maxActive" value="${database.maxActive}" />
+         <property name="minIdle" value="${database.minIdle}" />
+         <property name="maxWait" value="${database.maxWait}" />
+         <property name="validationQuery" value="${database.validationQuery}" />
+         <property name="testOnBorrow" value="${database.testOnBorrow}" />
+         <property name="testOnReturn" value="${database.testOnReturn}" />
+         <property name="testWhileIdle" value="${database.testWhileIdle}" />
+         <property name="timeBetweenEvictionRunsMillis" value="${database.timeBetweenEvictionRunsMillis}" />
+         <property name="filters" value="${database.filters}" />
+    </bean>
+
+    <!--数据源 读 -->
+    <bean id="dataSourceR" class="com.alibaba.druid.pool.DruidDataSource"
+       init-method="init" destroy-method="close">
+         <property name="driverClassName" value="${database.driverClassName2}" />
+         <property name="url" value="${database.url2}" />
+         <property name="username" value="${database.username2}" />
+         <property name="password" value="${database.password2}" />
+         <property name="initialSize" value="${database.initialSize}" />
+         <property name="maxActive" value="${database.maxActive}" />
+         <property name="minIdle" value="${database.minIdle}" />
+         <property name="maxWait" value="${database.maxWait}" />
+         <property name="validationQuery" value="${database.validationQuery}" />
+         <property name="testOnBorrow" value="${database.testOnBorrow}" />
+         <property name="testOnReturn" value="${database.testOnReturn}" />
+         <property name="testWhileIdle" value="${database.testWhileIdle}" />
+         <property name="timeBetweenEvictionRunsMillis" value="${database.timeBetweenEvictionRunsMillis}" />
+         <property name="filters" value="${database.filters}" />
+    </bean>
+
+    <!--数据源 读 -->
+    <bean id="salve_two" class="com.alibaba.druid.pool.DruidDataSource"
+       init-method="init" destroy-method="close">
+         <property name="driverClassName" value="${database.driverClassName3}" />
+         <property name="url" value="${database.url3}" />
+         <property name="username" value="${database.username3}" />
+         <property name="password" value="${database.password3}" />
+         <property name="initialSize" value="${database.initialSize}" />
+         <property name="maxActive" value="${database.maxActive}" />
+         <property name="minIdle" value="${database.minIdle}" />
+         <property name="maxWait" value="${database.maxWait}" />
+         <property name="validationQuery" value="${database.validationQuery}" />
+         <property name="testOnBorrow" value="${database.testOnBorrow}" />
+         <property name="testOnReturn" value="${database.testOnReturn}" />
+         <property name="testWhileIdle" value="${database.testWhileIdle}" />
+         <property name="timeBetweenEvictionRunsMillis" value="${database.timeBetweenEvictionRunsMillis}" />
+         <property name="filters" value="${database.filters}" />
+    </bean>
+
+    <!-- 动态数据源 -->
+    <bean id="dynamicDataSource" class="com.aether.util.proxy.DynamicDataSourceHolder">
+       <!-- 通过key-value关联数据源 -->
+         <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <!-- write -->
+               <entry key="dataSourceKeyRW" value-ref="dataSourceRW"></entry>
+                <!-- read -->
+                <entry key="dataSourceKeyR" value-ref="dataSourceR"></entry>
+                <!-- read-2 -->
+                <entry key="dataSourceKeyR2" value-ref="salve_two"></entry>
+            </map>
+         </property>
+       <property name="defaultTargetDataSource" ref="dataSourceRW" />
+    </bean>
+
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->  
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
+        <property name="dataSource" ref="dynamicDataSource" />  
+        <!-- 自动扫描mapping.xml文件 -->  
+        <property name="mapperLocations" value="classpath:mapping/*.xml"></property>
+        <property name="typeAliasesPackage" value="com.aether.domain"/>
+        <property name="plugins">
+           <array>
+             <bean class="com.github.pagehelper.PageHelper">
+              <property name="properties">
+              <value>
+                dialect=hsqldb
+              </value>
+              </property>
+             </bean>
+          </array>
+        </property>
+    </bean>  
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	  <property name="basePackage" value="com.aether.dao" />
+<!-- <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" /> -->
+	</bean>
+
+   
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->  
+    <bean id="transactionManager"  
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+        <property name="dataSource" ref="dynamicDataSource" />  
+    </bean>
+
+    <!-- 标注类型 的事务配置 如果使用注解事务。就放开 默认动态代理为JDK 不要随便写true -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    <bean id="manyDataSourceAspect" class="com.aether.util.proxy.DataSourceAspect"/>
+
+    <aop:config>
+        <aop:aspect id="c" ref="manyDataSourceAspect" order="1">
+           <aop:pointcut id="tx" 	expression="execution(* com.aether.dao.*.*(..))" />
+           <aop:before pointcut-ref="tx" method="before" />
+    </aop:aspect>
+    </aop:config>
+
+</beans> 
