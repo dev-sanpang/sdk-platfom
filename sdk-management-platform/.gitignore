@@ -18,4 +18,4 @@ logs/
 .idea
 src/main/webapp/.idea/workspace.xml
 .externalToolBuilders
-
+.bbx
